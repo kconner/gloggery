@@ -1,0 +1,13 @@
+gloggery: src/*.go
+	@go build -o $@ src/*.go
+	@echo built
+
+clean:
+	@rm gloggery 2>/dev/null || true
+	@echo cleaned
+
+watch:
+	@find src/*.go | entr make -s
+
+watch-run:
+	@find src/*.go | entr -s 'make -s && ./gloggery'
