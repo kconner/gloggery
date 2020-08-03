@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func listFilenamesOrderedReverse(folder string) []string {
+func listFolderItemsReverse(folder string) []string {
 	folderItems, err := ioutil.ReadDir(folder)
 	if err != nil {
 		log.Fatalf("can't list folder %v", folder)
@@ -18,8 +18,8 @@ func listFilenamesOrderedReverse(folder string) []string {
 	result := make([]string, 0, len(folderItems))
 
 	// ioutil.ReadDir returns results sorted by name,
-	// which is chronological order for date-prefixed files.
-	// We want reverse chronological order.
+	// which is chronological order given date-prefixed files.
+	// For a glog, we want reverse chronological order.
 	for i := len(folderItems) - 1; 0 <= i; i-- {
 		result = append(result, folderItems[i].Name())
 	}
@@ -36,7 +36,7 @@ func readFile(path string) []byte {
 	return result
 }
 
-func writeToFile(folder, filename string, write func(writer io.Writer)) {
+func writeFile(folder, filename string, write func(writer io.Writer)) {
 	path := filepath.Join(folder, filename)
 
 	mode := os.O_WRONLY | os.O_CREATE | os.O_TRUNC

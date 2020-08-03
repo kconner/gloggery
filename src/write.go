@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"text/template"
 )
 
@@ -15,20 +14,8 @@ func writeGlog(templates *template.Template, folder string, posts []*Post) {
 		filename := fmt.Sprintf("%v.gmi", post.Filename)
 		filenames = append(filenames, filename)
 
-		writePostPage(templates, folder, filename, post)
+		renderTemplate(templates, folder, filename, postTemplateName, *post)
 	}
 
-	writeIndexPage(templates, folder, "index.gmi", filenames)
-}
-
-func writePostPage(templates *template.Template, folder, filename string, post *Post) {
-	writeToFile(folder, filename, func(writer io.Writer) {
-		templates.ExecuteTemplate(writer, "post.tmpl", *post)
-	})
-}
-
-func writeIndexPage(templates *template.Template, folder, filename string, postFilenames []string) {
-	writeToFile(folder, filename, func(writer io.Writer) {
-		templates.ExecuteTemplate(writer, "index.tmpl", postFilenames)
-	})
+	renderTemplate(templates, folder, "index.gmi", indexTemplateName, filenames)
 }

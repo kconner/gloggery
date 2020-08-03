@@ -16,7 +16,7 @@ type Post struct {
 func readPost(folder string, filename string) *Post {
 	path := filepath.Join(folder, filename)
 
-	date := dateStringFromFilename(filename)
+	date := parseFilenameDate(filename)
 	body := readFile(path)
 
 	return &Post{
@@ -28,7 +28,7 @@ func readPost(folder string, filename string) *Post {
 
 var filenameDateRegex = regexp.MustCompile("^\\d{4}-\\d{2}-\\d{2}-")
 
-func dateStringFromFilename(filename string) string {
+func parseFilenameDate(filename string) string {
 	match := filenameDateRegex.FindString(filename)
 	if match == "" {
 		log.Fatalf("can't parse date from post filename %v", filename)

@@ -13,18 +13,18 @@ func main() {
 	templatesFolder := filepath.Join(homeFolder, "gloggery/templates")
 	glogFolder := filepath.Join(homeFolder, "public_gemini/glog")
 
-	postFilenames := listFilenamesOrderedReverse(postsFolder)
+	filenames := listFolderItemsReverse(postsFolder)
 
-	if len(postFilenames) == 0 {
+	if len(filenames) == 0 {
 		fmt.Printf("no posts in %v\n", postsFolder)
 		os.Exit(0)
 	}
 
-	templates := parseTemplates(templatesFolder, "post.tmpl", "index.tmpl")
+	templates := parseTemplates(templatesFolder)
 
-	posts := make([]*Post, 0, len(postFilenames))
-	for _, postFilename := range postFilenames {
-		posts = append(posts, readPost(postsFolder, postFilename))
+	posts := make([]*Post, 0, len(filenames))
+	for _, filename := range filenames {
+		posts = append(posts, readPost(postsFolder, filename))
 	}
 
 	writeGlog(templates, glogFolder, posts)
