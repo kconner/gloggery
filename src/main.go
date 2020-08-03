@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -13,19 +12,11 @@ func main() {
 	templatesFolder := filepath.Join(homeFolder, "gloggery/templates")
 	glogFolder := filepath.Join(homeFolder, "public_gemini/glog")
 
-	filenames := listFolderItemsReverse(postsFolder)
+	posts := make(chan []*post)
+	go loadPosts(postsFolder, posts)
 
-	if len(filenames) == 0 {
-		fmt.Printf("no posts in %v\n", postsFolder)
-		os.Exit(0)
-	}
+	builder := make(chan *builder)
+	go loadBuilder(templatesFolder, builder)
 
-	posts := make([]*post, 0, len(filenames))
-	for _, filename := range filenames {
-		posts = append(posts, newPost(postsFolder, filename))
-	}
-
-	builder := newBuilder(templatesFolder)
-
-	builder.buildGlog(glogFolder, posts)
+	(<-builder).buildGlog(glogFolder, <-posts)
 }

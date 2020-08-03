@@ -1,28 +1,53 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"path/filepath"
+	"os"
 	"regexp"
 	"time"
 )
 
 type post struct {
 	Filename string
+	Read     func() *postContent
+}
+
+type postContent struct {
 	Date string
 	Body string
 }
 
-func newPost(folder string, filename string) *post {
-	path := filepath.Join(folder, filename)
+func loadPosts(folder string, result chan []*post) {
+	filenames := listFolderItemsReverse(folder)
 
-	date := parseFilenameDate(filename)
-	body := readFile(path)
+	if len(filenames) == 0 {
+		fmt.Printf("no posts in %v\n", folder)
+		os.Exit(0)
+	}
+
+	posts := make([]*post, 0, len(filenames))
+	for _, filename := range filenames {
+		posts = append(posts, newPost(folder, filename))
+	}
+
+	result <- posts
+}
+
+func newPost(folder, filename string) *post {
+	read := func() *postContent {
+		date := parseFilenameDate(filename)
+		body := readFile(folder, filename)
+
+		return &postContent{
+			Date: date,
+			Body: string(body),
+		}
+	}
 
 	return &post{
 		Filename: filename,
-		Date: date,
-		Body: string(body),
+		Read:     read,
 	}
 }
 

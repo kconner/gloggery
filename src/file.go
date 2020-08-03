@@ -27,7 +27,9 @@ func listFolderItemsReverse(folder string) []string {
 	return result
 }
 
-func readFile(path string) []byte {
+func readFile(folder, filename string) []byte {
+	path := filepath.Join(folder, filename)
+
 	result, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalf("can't read %v", path)
