@@ -20,12 +20,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	templates := parseTemplates(templatesFolder)
-
 	posts := make([]*Post, 0, len(filenames))
 	for _, filename := range filenames {
 		posts = append(posts, readPost(postsFolder, filename))
 	}
 
-	writeGlog(templates, glogFolder, posts)
+	builder := newBuilder(templatesFolder)
+
+	builder.buildGlog(glogFolder, posts)
 }
