@@ -1,5 +1,6 @@
 # https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
-prefix=/usr/local
+# Using $HOME instead of /usr/local though.
+prefix=$(HOME)
 exec_prefix=$(prefix)
 bindir=$(exec_prefix)/bin
 
@@ -7,10 +8,16 @@ gloggery: src/*.go
 	@go build -o $@ src/*.go
 	@echo built
 
-install_path=$(bindir)/gloggery
+command_path=$(bindir)/gloggery
+data_path=$(HOME)/gloggery
 install: gloggery
-	@cp gloggery $(install_path)
-	@echo installed at $(install_path)
+	@cp gloggery $(command_path)
+	@echo command installed at $(command_path)
+	@mkdir -p $(data_path)
+	@mkdir -p $(data_path)/posts
+	@mkdir -p $(data_path)/templates
+	@cp -n templates/*.tmpl $(data_path)/templates/
+	@echo data installed at $(data_path)
 
 clean:
 	@rm gloggery 2>/dev/null || true
