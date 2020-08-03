@@ -27,7 +27,7 @@ watch:
 	@find src/*.go | entr make -s
 
 watch-run:
-	@find src/*.go | entr -s 'make -s && ./gloggery'
+	@find src/*.go | entr -s 'make -s && time ./gloggery'
 
 format:
 	@go fmt src/*.go
