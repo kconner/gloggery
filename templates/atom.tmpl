@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>{{.URL}}</id>
+    <title>{{.Title}}</title>
+    <updated>{{.LatestPostISODate}}</updated>
+    <link href="{{.URL}}/atom.xml" rel="self"/>
+    <link href="{{.URL}}" rel="alternate"/>
+    {{range .Posts}}
+    <entry>
+        <id>{{.URL}}</id>
+        <title>{{.Date}}</title>
+        <updated>{{.ISODate}}</updated>
+        <link href="{{.URL}}" rel="alternate"/>
+    </entry>{{end}}
+</feed>

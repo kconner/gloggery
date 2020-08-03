@@ -1,6 +1,7 @@
-=> .. <- ~easeout
+=> .. <- {{.Title}}
 
 # Glog
+{{range .Posts}}
+=> {{.Filename}}{{end}}
 
-{{range .}}=> {{.}}
-{{end}}
+=> {{.URL}}/atom.xml Feed

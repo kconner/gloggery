@@ -15,11 +15,13 @@ type builder struct {
 const (
 	postTemplateName  = "post.tmpl"
 	indexTemplateName = "index.tmpl"
+	atomTemplateName = "atom.tmpl"
 )
 
 var templateNames = []string{
 	postTemplateName,
 	indexTemplateName,
+	atomTemplateName,
 }
 
 func loadBuilder(folder string, result chan *builder) {
@@ -36,34 +38,24 @@ func loadBuilder(folder string, result chan *builder) {
 	result <- &builder{template}
 }
 
-func (b *builder) buildGlog(folder string, posts []*post) {
+func (b *builder) buildGlog(folder string, postIndex *postIndex) {
 	fmt.Printf("in %v:\n", folder)
 
 	// Start each build task and collect their completion signals
 	taskDone := make(chan int)
 
-	// While writing post pages, collect their filenames to link from the index
-	filenames := make([]string, 0, len(posts))
-
-	for _, post := range posts {
-		filename := fmt.Sprintf("%v.gmi", post.Filename)
-		filenames = append(filenames, filename)
-
-		go b.buildPost(folder, filename, post, taskDone)
+	for _, post := range postIndex.Posts {
+		go b.buildFile(folder, post.Filename, postTemplateName, post, taskDone)
 	}
 
-	go b.buildFile(folder, "index.gmi", indexTemplateName, filenames, taskDone)
+	go b.buildFile(folder, "index.gmi", indexTemplateName, postIndex, taskDone)
 
-	taskCount := 1 + len(posts)
+	go b.buildFile(folder, "atom.xml", atomTemplateName, postIndex, taskDone)
+
+	taskCount := 2 + len(postIndex.Posts)
 	for i := 0; i < taskCount; i++ {
 		<-taskDone
 	}
-}
-
-func (b *builder) buildPost(folder, filename string, post *post, taskDone chan int) {
-	content := post.Read()
-
-	b.buildFile(folder, filename, postTemplateName, content, taskDone)
 }
 
 func (b *builder) buildFile(folder, filename, templateName string, model interface{}, taskDone chan int) {

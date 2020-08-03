@@ -4,21 +4,26 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"regexp"
 	"time"
 )
 
+type postIndex struct {
+	URL string
+	Title string
+	Posts []*post
+}
+
 type post struct {
 	Filename string
-	Read     func() *postContent
-}
-
-type postContent struct {
+	URL string
 	Date string
-	Body string
+	ISODate string
+	ReadBody func() string
 }
 
-func loadPosts(folder string, result chan []*post) {
+func loadPostIndex(folder, title, glogURL string, result chan *postIndex) {
 	filenames := listFolderItemsReverse(folder)
 
 	if len(filenames) == 0 {
@@ -28,32 +33,51 @@ func loadPosts(folder string, result chan []*post) {
 
 	posts := make([]*post, 0, len(filenames))
 	for _, filename := range filenames {
-		posts = append(posts, newPost(folder, filename))
+		posts = append(posts, newPost(folder, filename, glogURL))
 	}
 
-	result <- posts
+	result <- &postIndex{
+		Title: title,
+		URL: glogURL,
+		Posts: posts,
+	}
 }
 
-func newPost(folder, filename string) *post {
-	read := func() *postContent {
-		date := parseFilenameDate(filename)
-		body := readFile(folder, filename)
+func (pi *postIndex) LatestPostISODate() string {
+	if (len(pi.Posts) == 0) {
+		return ""
+	}
 
-		return &postContent{
-			Date: date,
-			Body: string(body),
-		}
+	return pi.Posts[0].ISODate
+}
+
+func newPost(folder, filename, glogURL string) *post {
+	geminiFilename := fmt.Sprintf("%v.gmi", filename)
+
+	url := path.Join(glogURL, geminiFilename)
+
+	date, isoDate := parseFilenameDate(filename)
+
+	readBody := func() string {
+		return string(readFile(folder, filename))
 	}
 
 	return &post{
-		Filename: filename,
-		Read:     read,
+		Filename: geminiFilename,
+		URL: url,
+		Date:     date,
+		ISODate:     isoDate,
+		ReadBody: readBody,
 	}
+}
+
+func (p *post) Body() string {
+	return p.ReadBody()
 }
 
 var filenameDateRegex = regexp.MustCompile("^\\d{4}-\\d{2}-\\d{2}-")
 
-func parseFilenameDate(filename string) string {
+func parseFilenameDate(filename string) (readableDate string, isoDate string) {
 	match := filenameDateRegex.FindString(filename)
 	if match == "" {
 		log.Fatalf("can't parse date from post filename %v", filename)
@@ -64,5 +88,7 @@ func parseFilenameDate(filename string) string {
 		log.Fatalf("can't parse date from post filename %v", filename)
 	}
 
-	return date.Format("2 January 2006")
+	readableDate = date.Format("2 January 2006")
+	isoDate = date.Format(time.RFC3339)
+	return
 }

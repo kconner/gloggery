@@ -12,11 +12,14 @@ func main() {
 	templatesFolder := filepath.Join(homeFolder, "gloggery/templates")
 	glogFolder := filepath.Join(homeFolder, "public_gemini/glog")
 
-	posts := make(chan []*post)
-	go loadPosts(postsFolder, posts)
+	title := "~easeout"
+	glogURL := "gemini://tilde.team/~easeout/glog"
+
+	postIndex := make(chan *postIndex)
+	go loadPostIndex(postsFolder, title, glogURL, postIndex)
 
 	builder := make(chan *builder)
 	go loadBuilder(templatesFolder, builder)
 
-	(<-builder).buildGlog(glogFolder, <-posts)
+	(<-builder).buildGlog(glogFolder, <-postIndex)
 }
