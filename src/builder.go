@@ -36,7 +36,7 @@ func newBuilder(folder string) *builder {
 	return &builder{template}
 }
 
-func (b *builder) buildGlog(folder string, posts []*Post) {
+func (b *builder) buildGlog(folder string, posts []*post) {
 	fmt.Printf("in %v:\n", folder)
 
 	// While writing post pages, collect filenames to link from the index

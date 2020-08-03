@@ -7,19 +7,19 @@ import (
 	"time"
 )
 
-type Post struct {
+type post struct {
 	Filename string
 	Date string
 	Body string
 }
 
-func readPost(folder string, filename string) *Post {
+func newPost(folder string, filename string) *post {
 	path := filepath.Join(folder, filename)
 
 	date := parseFilenameDate(filename)
 	body := readFile(path)
 
-	return &Post{
+	return &post{
 		Filename: filename,
 		Date: date,
 		Body: string(body),

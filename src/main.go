@@ -20,9 +20,9 @@ func main() {
 		os.Exit(0)
 	}
 
-	posts := make([]*Post, 0, len(filenames))
+	posts := make([]*post, 0, len(filenames))
 	for _, filename := range filenames {
-		posts = append(posts, readPost(postsFolder, filename))
+		posts = append(posts, newPost(postsFolder, filename))
 	}
 
 	builder := newBuilder(templatesFolder)
