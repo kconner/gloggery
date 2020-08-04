@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"path"
 	"regexp"
 	"time"
 )
@@ -19,7 +18,7 @@ type post struct {
 func newPost(folder, filename, glogURL string) *post {
 	geminiFilename := fmt.Sprintf("%v.gmi", filename)
 
-	url := path.Join(glogURL, geminiFilename)
+	url := fmt.Sprintf("%v/%v", glogURL, geminiFilename)
 
 	date, isoDate := parseFilenameDate(filename)
 
