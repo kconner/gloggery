@@ -15,7 +15,7 @@ type builder struct {
 const (
 	postTemplateName  = "post.tmpl"
 	indexTemplateName = "index.tmpl"
-	atomTemplateName = "atom.tmpl"
+	atomTemplateName  = "atom.tmpl"
 )
 
 var templateNames = []string{

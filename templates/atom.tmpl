@@ -5,7 +5,7 @@
     <updated>{{.LatestPostISODate}}</updated>
     <link href="{{.URL}}/atom.xml" rel="self"/>
     <link href="{{.URL}}" rel="alternate"/>
-    {{range .Posts}}
+    {{range .LatestPosts 10}}
     <entry>
         <id>{{.URL}}</id>
         <title>{{.Date}}</title>
