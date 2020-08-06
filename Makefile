@@ -9,7 +9,7 @@ gloggery: src/*.go
 	@echo built
 
 command_path=$(bindir)/gloggery
-data_path=$(HOME)/gloggery
+data_path=$(HOME)/.gloggery
 install: gloggery
 	@cp gloggery $(command_path)
 	@echo command installed at $(command_path)

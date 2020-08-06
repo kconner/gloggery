@@ -8,8 +8,8 @@ import (
 func main() {
 	// TODO: Decide paths with command-line options
 	homeFolder := os.Getenv("HOME")
-	postsFolder := filepath.Join(homeFolder, "gloggery/posts")
-	templatesFolder := filepath.Join(homeFolder, "gloggery/templates")
+	postsFolder := filepath.Join(homeFolder, ".gloggery/posts")
+	templatesFolder := filepath.Join(homeFolder, ".gloggery/templates")
 	glogFolder := filepath.Join(homeFolder, "public_gemini/glog")
 
 	glogURL := "gemini://tilde.team/~easeout/glog"
