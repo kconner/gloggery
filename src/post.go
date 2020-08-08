@@ -15,10 +15,10 @@ type post struct {
 	ReadBody func() string
 }
 
-func newPost(folder, filename, glogURL string) *post {
+func newPost(folder, filename, indexURL string) *post {
 	geminiFilename := fmt.Sprintf("%v.gmi", filename)
 
-	url := fmt.Sprintf("%v/%v", glogURL, geminiFilename)
+	url := fmt.Sprintf("%v/%v", indexURL, geminiFilename)
 
 	date, isoDate := parseFilenameDate(filename)
 

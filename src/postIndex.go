@@ -11,7 +11,7 @@ type postIndex struct {
 	Posts []*post
 }
 
-func loadPostIndex(folder, glogURL, title string, result chan *postIndex) {
+func loadPostIndex(folder, url, title string, result chan *postIndex) {
 	filenames := listFolderItemsReverse(folder)
 
 	if len(filenames) == 0 {
@@ -21,12 +21,12 @@ func loadPostIndex(folder, glogURL, title string, result chan *postIndex) {
 
 	posts := make([]*post, 0, len(filenames))
 	for _, filename := range filenames {
-		posts = append(posts, newPost(folder, filename, glogURL))
+		posts = append(posts, newPost(folder, filename, url))
 	}
 
 	result <- &postIndex{
 		Title: title,
-		URL:   glogURL,
+		URL:   url,
 		Posts: posts,
 	}
 }

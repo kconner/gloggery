@@ -1,25 +1,48 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 )
 
 func main() {
-	// TODO: Decide paths with command-line options
-	homeFolder := os.Getenv("HOME")
-	postsFolder := filepath.Join(homeFolder, ".gloggery/posts")
-	templatesFolder := filepath.Join(homeFolder, ".gloggery/templates")
-	glogFolder := filepath.Join(homeFolder, "public_gemini/glog")
+	inputFolder, outputFolder, url, title := parseFlags()
 
-	glogURL := "gemini://tilde.team/~easeout/glog"
-	title := "~easeout"
+	postsFolder := filepath.Join(inputFolder, "posts")
+	templatesFolder := filepath.Join(inputFolder, "templates")
 
 	postIndex := make(chan *postIndex)
-	go loadPostIndex(postsFolder, glogURL, title, postIndex)
+	go loadPostIndex(postsFolder, url, title, postIndex)
 
 	builder := make(chan *builder)
 	go loadBuilder(templatesFolder, builder)
 
-	(<-builder).buildGlog(glogFolder, <-postIndex)
+	(<-builder).buildGlog(outputFolder, <-postIndex)
+}
+
+func parseFlags() (inputFolder, outputFolder, url, title string) {
+	host, err := os.Hostname()
+	if err != nil {
+		host = "host"
+	}
+
+	user := os.Getenv("USER")
+	if user == "" {
+		user = "user"
+	}
+
+	homeFolder, err := os.UserHomeDir()
+	if err != nil {
+		homeFolder = filepath.Join("/home", user)
+	}
+
+	flag.StringVar(&inputFolder, "input", filepath.Join(homeFolder, ".gloggery"), "folder path containing posts and templates subfolders")
+	flag.StringVar(&outputFolder, "output", filepath.Join(homeFolder, "public_gemini/glog"), "folder path to receive Gemini files")
+	flag.StringVar(&url, "url", fmt.Sprintf("gemini://%v/~%v/glog", host, user), "gemini:// url equivalent to the output folder")
+	flag.StringVar(&title, "title", fmt.Sprintf("~%v", user), "reader-facing glog title")
+
+	flag.Parse()
+	return
 }
