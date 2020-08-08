@@ -21,13 +21,16 @@ install: gloggery
 
 clean:
 	@rm gloggery 2>/dev/null || true
+	@rm output/* 2>/dev/null || true
+	@rmdir output 2>/dev/null || true
 	@echo cleaned
 
 watch:
 	@find src/*.go | entr make -s
 
 watch-run:
-	@find src/*.go | entr -s 'make -s && time ./gloggery'
+	@mkdir -p output
+	@find src/*.go | entr -s 'make -s && time ./gloggery --output output'
 
 format:
 	@go fmt src/*.go
