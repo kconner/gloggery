@@ -8,6 +8,7 @@ import (
 )
 
 type post struct {
+	ModifiedTime time.Time
 	Filename string
 	URL      string
 	Date     string
@@ -15,18 +16,19 @@ type post struct {
 	ReadBody func() string
 }
 
-func newPost(folder, filename, indexURL string) *post {
-	geminiFilename := fmt.Sprintf("%v.gmi", filename)
+func newPost(folder string, item folderItem, indexURL string) *post {
+	geminiFilename := fmt.Sprintf("%v.gmi", item.Filename)
 
 	url := fmt.Sprintf("%v/%v", indexURL, geminiFilename)
 
-	date, isoDate := parseFilenameDate(filename)
+	date, isoDate := parseFilenameDate(item.Filename)
 
 	readBody := func() string {
-		return string(readFile(folder, filename))
+		return string(readFile(folder, item.Filename))
 	}
 
 	return &post{
+		ModifiedTime: item.ModifiedTime,
 		Filename: geminiFilename,
 		URL:      url,
 		Date:     date,
@@ -51,6 +53,15 @@ func parseFilenameDate(filename string) (readableDate string, isoDate string) {
 	readableDate = date.Format("2 January 2006")
 	isoDate = date.Format(time.RFC3339)
 	return
+}
+
+func (p *post) ShouldBuild(geminiFolder string) bool {
+	geminiModifiedTime, ok := findModifiedTime(geminiFolder, p.Filename)
+	if !ok {
+		return true
+	}
+
+	return geminiModifiedTime.Before(p.ModifiedTime)
 }
 
 func (p *post) Body() string {

@@ -12,16 +12,16 @@ type postIndex struct {
 }
 
 func loadPostIndex(folder, url, title string, result chan *postIndex) {
-	filenames := listFolderItemsReverse(folder)
+	items := listFolderItemsReverse(folder)
 
-	if len(filenames) == 0 {
+	if len(items) == 0 {
 		fmt.Printf("no posts in %v\n", folder)
 		os.Exit(0)
 	}
 
-	posts := make([]*post, 0, len(filenames))
-	for _, filename := range filenames {
-		posts = append(posts, newPost(folder, filename, url))
+	posts := make([]*post, 0, len(items))
+	for _, item := range items {
+		posts = append(posts, newPost(folder, item, url))
 	}
 
 	result <- &postIndex{

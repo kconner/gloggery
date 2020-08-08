@@ -38,23 +38,35 @@ func loadBuilder(folder string, result chan *builder) {
 	result <- &builder{template}
 }
 
-func (b *builder) buildGlog(folder string, postIndex *postIndex) {
+func (b *builder) buildGlog(folder string, postIndex *postIndex, shouldRebuild bool) {
 	fmt.Printf("in %v:\n", folder)
 
 	// Start each build task and collect their completion signals
 	taskDone := make(chan int)
+	taskCount := 0
 
 	for _, post := range postIndex.Posts {
-		go b.buildFile(folder, post.Filename, postTemplateName, post, taskDone)
+		if shouldRebuild || post.ShouldBuild(folder) {
+			go b.buildFile(folder, post.Filename, postTemplateName, post, taskDone)
+			taskCount++
+		}
 	}
 
-	go b.buildFile(folder, "index.gmi", indexTemplateName, postIndex, taskDone)
+	// Build index and atom feed only rebuilding or posts changed
+	if shouldRebuild || 0 < taskCount {
+		go b.buildFile(folder, "index.gmi", indexTemplateName, postIndex, taskDone)
+		taskCount++
 
-	go b.buildFile(folder, "atom.xml", atomTemplateName, postIndex, taskDone)
+		go b.buildFile(folder, "atom.xml", atomTemplateName, postIndex, taskDone)
+		taskCount++
+	}
 
-	taskCount := 2 + len(postIndex.Posts)
-	for i := 0; i < taskCount; i++ {
-		<-taskDone
+	if taskCount == 0 {
+		fmt.Println("nothing new to build")
+	} else {
+		for i := 0; i < taskCount; i++ {
+			<-taskDone
+		}
 	}
 }
 
