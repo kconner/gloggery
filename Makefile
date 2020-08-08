@@ -30,7 +30,7 @@ watch:
 
 watch-run:
 	@mkdir -p output
-	@find src/*.go | entr -s 'make -s && time ./gloggery --input . --output output'
+	@find src/*.go | entr -s 'make -s && time ./gloggery --input . --output output --rebuild'
 
 format:
 	@go fmt src/*.go
