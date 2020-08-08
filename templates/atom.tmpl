@@ -5,6 +5,7 @@
     <updated>{{.LatestPostISODate}}</updated>
     <link href="{{.URL}}/atom.xml" rel="self"/>
     <link href="{{.URL}}" rel="alternate"/>
+    <generator uri="https://github.com/kconner/gloggery">gloggery</generator>
     {{range .LatestPosts 10}}
     <entry>
         <id>{{.URL}}</id>
