@@ -11,7 +11,7 @@ import (
 )
 
 type folderItem struct {
-	Filename string
+	Filename     string
 	ModifiedTime time.Time
 }
 
@@ -28,7 +28,7 @@ func listFolderItemsReverse(folder string) []folderItem {
 	// For a glog, we want reverse chronological order.
 	for i := len(fileInfos) - 1; 0 <= i; i-- {
 		items = append(items, folderItem{
-			Filename: fileInfos[i].Name(),
+			Filename:     fileInfos[i].Name(),
 			ModifiedTime: fileInfos[i].ModTime(),
 		})
 	}

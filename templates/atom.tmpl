@@ -9,7 +9,7 @@
     {{range .LatestPosts 10}}
     <entry>
         <id>{{.URL}}</id>
-        <title>{{.Date}}</title>
+        <title>{{.Title}}</title>
         <updated>{{.ISODate}}</updated>
         <link href="{{.URL}}" rel="alternate"/>
     </entry>{{end}}

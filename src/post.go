@@ -9,11 +9,12 @@ import (
 
 type post struct {
 	ModifiedTime time.Time
-	Filename string
-	URL      string
-	Date     string
-	ISODate  string
-	ReadBody func() string
+	Filename     string
+	URL          string
+	Date         string
+	ISODate      string
+	Title        string
+	ReadBody     func() string
 }
 
 func newPost(folder string, item folderItem, indexURL string) *post {
@@ -21,7 +22,7 @@ func newPost(folder string, item folderItem, indexURL string) *post {
 
 	url := fmt.Sprintf("%v/%v", indexURL, geminiFilename)
 
-	date, isoDate := parseFilenameDate(item.Filename)
+	date, isoDate, title := parseFilename(item.Filename)
 
 	readBody := func() string {
 		return string(readFile(folder, item.Filename))
@@ -29,29 +30,31 @@ func newPost(folder string, item folderItem, indexURL string) *post {
 
 	return &post{
 		ModifiedTime: item.ModifiedTime,
-		Filename: geminiFilename,
-		URL:      url,
-		Date:     date,
-		ISODate:  isoDate,
-		ReadBody: readBody,
+		Filename:     geminiFilename,
+		URL:          url,
+		Date:         date,
+		ISODate:      isoDate,
+		Title:        title,
+		ReadBody:     readBody,
 	}
 }
 
-var filenameDateRegex = regexp.MustCompile("^\\d{4}-\\d{2}-\\d{2}-")
+var filenameRegex = regexp.MustCompile("^(\\d{4}-\\d{2}-\\d{2})-(.*)")
 
-func parseFilenameDate(filename string) (readableDate string, isoDate string) {
-	match := filenameDateRegex.FindString(filename)
-	if match == "" {
+func parseFilename(filename string) (readableDate, isoDate, title string) {
+	matches := filenameRegex.FindStringSubmatch(filename)
+	if len(matches) == 0 {
 		log.Fatalf("can't parse date from post filename %v", filename)
 	}
 
-	date, err := time.Parse("2006-01-02-", match)
+	date, err := time.Parse("2006-01-02", matches[1])
 	if err != nil {
 		log.Fatalf("can't parse date from post filename %v", filename)
 	}
 
 	readableDate = date.Format("2 January 2006")
 	isoDate = date.Format(time.RFC3339)
+	title = matches[2]
 	return
 }
 
