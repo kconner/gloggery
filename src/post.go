@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -13,34 +14,35 @@ type post struct {
 	URL          string
 	Date         time.Time
 	Title        string
-	ReadBody     func() string
+	Body         string
 }
 
 func newPost(folder string, item folderItem, indexURL string) *post {
 	geminiFilename := fmt.Sprintf("%v.gmi", item.Filename)
 
-	url := fmt.Sprintf("%v/%v", indexURL, geminiFilename)
+	title := "Untitled"
+	body := string(readFile(folder, item.Filename))
 
-	date, title := parseFilename(item.Filename)
-
-	readBody := func() string {
-		return string(readFile(folder, item.Filename))
+	splitBody := strings.SplitN(body, "\n\n", 2)
+	if len(splitBody) == 2 {
+		title = splitBody[0]
+		body = splitBody[1]
 	}
 
 	return &post{
 		ModifiedTime: item.ModifiedTime,
 		Filename:     geminiFilename,
-		URL:          url,
-		Date:         date,
+		URL:          fmt.Sprintf("%v/%v", indexURL, geminiFilename),
+		Date:         parseFilenameDate(item.Filename),
 		Title:        title,
-		ReadBody:     readBody,
+		Body:         body,
 	}
 }
 
-var filenameRegex = regexp.MustCompile("^(\\d{4}-\\d{2}-\\d{2})-(.*)")
+var filenameDateRegex = regexp.MustCompile("^(\\d{4}-\\d{2}-\\d{2})-")
 
-func parseFilename(filename string) (date time.Time, title string) {
-	matches := filenameRegex.FindStringSubmatch(filename)
+func parseFilenameDate(filename string) (date time.Time) {
+	matches := filenameDateRegex.FindStringSubmatch(filename)
 	if len(matches) == 0 {
 		log.Fatalf("can't parse date from post filename %v", filename)
 	}
@@ -49,8 +51,6 @@ func parseFilename(filename string) (date time.Time, title string) {
 	if err != nil {
 		log.Fatalf("can't parse date from post filename %v", filename)
 	}
-
-	title = matches[2]
 	return
 }
 
@@ -69,8 +69,4 @@ func (p *post) ReadableDate() string {
 
 func (p *post) ISODate() string {
 	return p.Date.Format(time.RFC3339)
-}
-
-func (p *post) Body() string {
-	return p.ReadBody()
 }
