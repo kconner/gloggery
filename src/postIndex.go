@@ -19,9 +19,22 @@ func loadPostIndex(folder, url, title string, result chan *postIndex) {
 		os.Exit(0)
 	}
 
-	posts := make([]*post, 0, len(items))
-	for _, item := range items {
-		posts = append(posts, newPost(folder, item, url))
+	taskDone := make(chan int)
+	taskCount := 0
+
+	posts := make([]*post, len(items), len(items))
+	for index, item := range items {
+		index := index
+		item := item
+		go func() {
+			posts[index] = newPost(folder, item, url)
+			taskDone <- 1
+		}()
+		taskCount++
+	}
+
+	for i := 0; i < taskCount; i++ {
+		<-taskDone
 	}
 
 	result <- &postIndex{
