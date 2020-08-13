@@ -11,8 +11,7 @@ type post struct {
 	ModifiedTime time.Time
 	Filename     string
 	URL          string
-	Date         string
-	ISODate      string
+	Date         time.Time
 	Title        string
 	ReadBody     func() string
 }
@@ -22,7 +21,7 @@ func newPost(folder string, item folderItem, indexURL string) *post {
 
 	url := fmt.Sprintf("%v/%v", indexURL, geminiFilename)
 
-	date, isoDate, title := parseFilename(item.Filename)
+	date, title := parseFilename(item.Filename)
 
 	readBody := func() string {
 		return string(readFile(folder, item.Filename))
@@ -33,7 +32,6 @@ func newPost(folder string, item folderItem, indexURL string) *post {
 		Filename:     geminiFilename,
 		URL:          url,
 		Date:         date,
-		ISODate:      isoDate,
 		Title:        title,
 		ReadBody:     readBody,
 	}
@@ -41,7 +39,7 @@ func newPost(folder string, item folderItem, indexURL string) *post {
 
 var filenameRegex = regexp.MustCompile("^(\\d{4}-\\d{2}-\\d{2})-(.*)")
 
-func parseFilename(filename string) (readableDate, isoDate, title string) {
+func parseFilename(filename string) (date time.Time, title string) {
 	matches := filenameRegex.FindStringSubmatch(filename)
 	if len(matches) == 0 {
 		log.Fatalf("can't parse date from post filename %v", filename)
@@ -52,8 +50,6 @@ func parseFilename(filename string) (readableDate, isoDate, title string) {
 		log.Fatalf("can't parse date from post filename %v", filename)
 	}
 
-	readableDate = date.Format("2 January 2006")
-	isoDate = date.Format(time.RFC3339)
 	title = matches[2]
 	return
 }
@@ -65,6 +61,14 @@ func (p *post) ShouldBuild(geminiFolder string) bool {
 	}
 
 	return geminiModifiedTime.Before(p.ModifiedTime)
+}
+
+func (p *post) ReadableDate() string {
+	return p.Date.Format("2 January 2006")
+}
+
+func (p *post) ISODate() string {
+	return p.Date.Format(time.RFC3339)
 }
 
 func (p *post) Body() string {

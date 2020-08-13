@@ -36,7 +36,7 @@ func (pi *postIndex) LatestPostISODate() string {
 		return ""
 	}
 
-	return pi.Posts[0].ISODate
+	return pi.Posts[0].ISODate()
 }
 
 func (pi *postIndex) LatestPosts(limit int) []*post {
