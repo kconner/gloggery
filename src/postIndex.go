@@ -3,15 +3,19 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 )
 
 type postIndex struct {
 	URL   string
 	Title string
 	Posts []*post
+	GeneratedTime time.Time
 }
 
 func loadPostIndex(folder, url, title string, result chan *postIndex) {
+	generatedTime := time.Now()
+
 	items := listFolderItemsReverse(folder)
 
 	if len(items) == 0 {
@@ -41,15 +45,12 @@ func loadPostIndex(folder, url, title string, result chan *postIndex) {
 		Title: title,
 		URL:   url,
 		Posts: posts,
+		GeneratedTime: generatedTime,
 	}
 }
 
-func (pi *postIndex) LatestPostISODate() string {
-	if len(pi.Posts) == 0 {
-		return ""
-	}
-
-	return pi.Posts[0].ISODate()
+func (pi *postIndex) GeneratedISODate() string {
+	return pi.GeneratedTime.Format(time.RFC3339)
 }
 
 func (pi *postIndex) LatestPosts(limit int) []*post {
