@@ -47,7 +47,7 @@ func parseFilenameDate(filename string) (date time.Time) {
 		log.Fatalf("can't parse date from post filename %v", filename)
 	}
 
-	date, err := time.Parse("2006-01-02", matches[1])
+	date, err := time.ParseInLocation("2006-01-02", matches[1], time.Local)
 	if err != nil {
 		log.Fatalf("can't parse date from post filename %v", filename)
 	}
@@ -68,5 +68,6 @@ func (p *post) ReadableDate() string {
 }
 
 func (p *post) ISODate() string {
-	return p.Date.Format(time.RFC3339)
+	// 8 PM
+	return p.Date.Add(time.Hour * 20).Format(time.RFC3339)
 }
