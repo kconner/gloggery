@@ -1,4 +1,7 @@
-=> . <- Glog
+=> . <- Glog{{if or .NextPost .PreviousPost}}
+{{with .NextPost}}
+=> {{.Filename}} Next: {{.Title}}{{end}}{{with .PreviousPost}}
+=> {{.Filename}} Previous: {{.Title}}{{end}}{{end}}
 
 {{.ReadableDate}}
 

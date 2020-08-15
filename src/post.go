@@ -9,6 +9,8 @@ import (
 )
 
 type post struct {
+	NextPost     *post
+	PreviousPost *post
 	ModifiedTime time.Time
 	Filename     string
 	URL          string
@@ -59,6 +61,12 @@ func parseFilename(filename string) (postTime time.Time, slug string) {
 }
 
 func (p *post) ShouldBuild(geminiFolder string) bool {
+	return p.HasChanged(geminiFolder) ||
+		(p.NextPost != nil && p.NextPost.HasChanged(geminiFolder)) ||
+		(p.PreviousPost != nil && p.PreviousPost.HasChanged(geminiFolder))
+}
+
+func (p *post) HasChanged(geminiFolder string) bool {
 	geminiModifiedTime, ok := findModifiedTime(geminiFolder, p.Filename)
 	if !ok {
 		return true

@@ -41,6 +41,11 @@ func loadPostIndex(folder, url, title string, result chan *postIndex) {
 		<-taskDone
 	}
 
+	for i := 1; i < len(posts); i++ {
+		posts[i].NextPost = posts[i-1]
+		posts[i-1].PreviousPost = posts[i]
+	}
+
 	result <- &postIndex{
 		Title:         title,
 		URL:           url,
