@@ -12,13 +12,15 @@ type post struct {
 	ModifiedTime time.Time
 	Filename     string
 	URL          string
-	Date         time.Time
+	PostTime     time.Time
 	Title        string
 	Body         string
 }
 
 func newPost(folder string, item folderItem, indexURL string) *post {
-	geminiFilename := fmt.Sprintf("%v.gmi", item.Filename)
+	postTime, slug := parseFilename(item.Filename)
+	postDateString := postTime.Format("2006-01-02")
+	geminiFilename := fmt.Sprintf("%v-%v.gmi", postDateString, slug)
 
 	title := "Untitled"
 	body := string(readFile(folder, item.Filename))
@@ -33,24 +35,26 @@ func newPost(folder string, item folderItem, indexURL string) *post {
 		ModifiedTime: item.ModifiedTime,
 		Filename:     geminiFilename,
 		URL:          fmt.Sprintf("%v/%v", indexURL, geminiFilename),
-		Date:         parseFilenameDate(item.Filename),
+		PostTime:     postTime,
 		Title:        title,
 		Body:         body,
 	}
 }
 
-var filenameDateRegex = regexp.MustCompile("^(\\d{4}-\\d{2}-\\d{2})-")
+var filenameRegex = regexp.MustCompile("^(\\d{4}-\\d{2}-\\d{2}-\\d{4})-(.*)")
 
-func parseFilenameDate(filename string) (date time.Time) {
-	matches := filenameDateRegex.FindStringSubmatch(filename)
+func parseFilename(filename string) (postTime time.Time, slug string) {
+	matches := filenameRegex.FindStringSubmatch(filename)
 	if len(matches) == 0 {
-		log.Fatalf("can't parse date from post filename %v", filename)
+		log.Fatalf("can't parse post filename %v", filename)
 	}
 
-	date, err := time.ParseInLocation("2006-01-02", matches[1], time.Local)
+	postTime, err := time.Parse("2006-01-02-1504", matches[1])
 	if err != nil {
-		log.Fatalf("can't parse date from post filename %v", filename)
+		log.Fatalf("can't parse post time from post filename %v", filename)
 	}
+
+	slug = matches[2]
 	return
 }
 
@@ -64,10 +68,9 @@ func (p *post) ShouldBuild(geminiFolder string) bool {
 }
 
 func (p *post) ReadableDate() string {
-	return p.Date.Format("2 January 2006")
+	return p.PostTime.Format("2 January 2006")
 }
 
-func (p *post) ISODate() string {
-	// 8 PM
-	return p.Date.Add(time.Hour * 20).Format(time.RFC3339)
+func (p *post) ISOTime() string {
+	return p.PostTime.Format(time.RFC3339)
 }

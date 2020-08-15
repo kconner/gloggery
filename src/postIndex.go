@@ -7,14 +7,14 @@ import (
 )
 
 type postIndex struct {
-	URL   string
-	Title string
-	Posts []*post
+	URL           string
+	Title         string
+	Posts         []*post
 	GeneratedTime time.Time
 }
 
 func loadPostIndex(folder, url, title string, result chan *postIndex) {
-	generatedTime := time.Now()
+	generatedTime := time.Now().In(time.UTC)
 
 	items := listFolderItemsReverse(folder)
 
@@ -42,14 +42,14 @@ func loadPostIndex(folder, url, title string, result chan *postIndex) {
 	}
 
 	result <- &postIndex{
-		Title: title,
-		URL:   url,
-		Posts: posts,
+		Title:         title,
+		URL:           url,
+		Posts:         posts,
 		GeneratedTime: generatedTime,
 	}
 }
 
-func (pi *postIndex) GeneratedISODate() string {
+func (pi *postIndex) GeneratedISOTime() string {
 	return pi.GeneratedTime.Format(time.RFC3339)
 }
 
