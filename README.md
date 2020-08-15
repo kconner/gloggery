@@ -11,9 +11,9 @@ When you run gloggery, it builds one post page per post, one index page to list 
 1. Have a [Go language](https://golang.org) environment
 2. `make install`
 
-make will build the executable, `gloggery`, and install it in `~/bin` by default. You can install it elsewhere by setting the `prefix` variable; by default it is `$HOME`.
+make will build the executable, `gloggery`, and install it in `~/bin` by default. You can change that by setting the `prefix` variable; by default it is `$HOME`.
 
-Installing will also create an empty `~/.gloggery/posts` folder and install default page templates to `~/.gloggery/templates`.
+Installing will also create an empty `~/.gloggery/posts` folder and copy default page templates to `~/.gloggery/templates`.
 
 ## Writing posts
 
@@ -23,7 +23,7 @@ To create a post, add a file to `~/.gloggery/posts`, named like:
 
 `2020-08-15-1427-hello-world`
 
-This filename consists of the year, month, day of the month, and 24-hour time of day, in UTC, plus a readable but URL-friendly slug title. You can get the current date and time with `date -u +%Y-%m-%d-%H%M`.
+This filename consists of the UTC year, month, day, and 24-hour time of day, plus a readable but URL-friendly slug title. You can get the current date and time with `date -u +%Y-%m-%d-%H%M`.
 
 Inside the file, the first line (text up to the first `\n\n`) will be treated as the post title. The rest of the file is the post body, in which you can write Gemtext or just plain text.
 
@@ -33,15 +33,15 @@ Inside the file, the first line (text up to the first `\n\n`) will be treated as
 
 Given posts, templates, and a few other bits of information, gloggery will generate Gemtext page files and an Atom feed, all of which you can serve up with the Gemini protocol.
 
-First, run `gloggery --help` and understand its options.
+First, run `gloggery --help` and understand its arguments.
 
-By default, gloggery consumes posts and templates as `--input` from `~/.gloggery/` and emits pages as `--output` into `~/public_gemini/glog/`, which is compatible with the author's home pubnix, [tilde.team](https://tilde.team).
+By default, gloggery consumes posts and templates as `--input` from `~/.gloggery` and emits pages as `--output` into `~/public_gemini/glog`, which is compatible with the author's home pubnix, [tilde.team](https://tilde.team).
 
 The default site `--title` is your username prefixed with `~`.
 
 The `--url` argument should be a `gemini://` URL corresponding to the `--output` folder.
 
-> Make sure and get this URL right. The default value of `--url` doesn't have a reliable way to identify your host's domain name, which may cause Atom feed links to be incorrect.
+> Make sure and get this URL right. gloggery doesn't have a reliable way to identify your host's domain name for the default value, which may cause Atom feed links to be incorrect.
 
 Run gloggery with the options appropriate to your glog.
 
