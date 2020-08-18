@@ -1,6 +1,6 @@
 # gloggery
 
-gloggery is a basic static site generator for blogs in [Gemini](https://gemini.circumlunar.space), usually called gemlogs or glogs.
+gloggery is a basic static site generator for blogs in [Gemini](https://gemini.circumlunar.space), usually called gemlogs or glogs. Visit [gloggery's home on Gemini](gemini://tilde.team/~easeout/gloggery).
 
 For posts, gloggery uses a simple post filename convention and plain text content.
 
