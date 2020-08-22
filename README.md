@@ -37,7 +37,9 @@ First, run `gloggery --help` and understand its arguments.
 
 By default, gloggery consumes posts and templates as `--input` from `~/.gloggery` and emits pages as `--output` into `~/public_gemini/glog`, which is compatible with the author's home pubnix, [tilde.team](https://tilde.team).
 
-The default site `--title` is your username prefixed with `~`.
+The default `--title` of the glog itself is "Glog".
+
+gloggery assumes your glog `--output` folder is within a broader site. The index template links to it using a `--site-title`, which defaults to your username prefixed with `~`. The default `--feed-title` for Atom readers is the `--site-title`.
 
 The `--url` argument should be a `gemini://` URL corresponding to the `--output` folder.
 

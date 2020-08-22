@@ -9,11 +9,13 @@ import (
 type postIndex struct {
 	URL           string
 	Title         string
+	SiteTitle     string
+	FeedTitle     string
 	Posts         []*post
 	GeneratedTime time.Time
 }
 
-func loadPostIndex(folder, url, title string, result chan *postIndex) {
+func loadPostIndex(folder, url, title, siteTitle, feedTitle string, result chan *postIndex) {
 	generatedTime := time.Now().In(time.UTC)
 
 	items := listFolderItemsReverse(folder)
@@ -26,12 +28,20 @@ func loadPostIndex(folder, url, title string, result chan *postIndex) {
 	taskDone := make(chan int)
 	taskCount := 0
 
-	posts := make([]*post, len(items), len(items))
-	for index, item := range items {
-		index := index
+	index := postIndex{
+		URL:           url,
+		Title:         title,
+		SiteTitle:     siteTitle,
+		FeedTitle:     feedTitle,
+		Posts:         make([]*post, len(items), len(items)),
+		GeneratedTime: generatedTime,
+	}
+
+	for i, item := range items {
+		i := i
 		item := item
 		go func() {
-			posts[index] = newPost(folder, item, url)
+			index.Posts[i] = newPost(&index, folder, item, url)
 			taskDone <- 1
 		}()
 		taskCount++
@@ -41,17 +51,12 @@ func loadPostIndex(folder, url, title string, result chan *postIndex) {
 		<-taskDone
 	}
 
-	for i := 1; i < len(posts); i++ {
-		posts[i].NextPost = posts[i-1]
-		posts[i-1].PreviousPost = posts[i]
+	for i := 1; i < len(index.Posts); i++ {
+		index.Posts[i].NextPost = index.Posts[i-1]
+		index.Posts[i-1].PreviousPost = index.Posts[i]
 	}
 
-	result <- &postIndex{
-		Title:         title,
-		URL:           url,
-		Posts:         posts,
-		GeneratedTime: generatedTime,
-	}
+	result <- &index
 }
 
 func (pi *postIndex) GeneratedISOTime() string {

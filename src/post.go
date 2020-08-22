@@ -9,6 +9,7 @@ import (
 )
 
 type post struct {
+	Index        *postIndex
 	NextPost     *post
 	PreviousPost *post
 	ModifiedTime time.Time
@@ -19,7 +20,7 @@ type post struct {
 	Body         string
 }
 
-func newPost(folder string, item folderItem, indexURL string) *post {
+func newPost(index *postIndex, folder string, item folderItem, indexURL string) *post {
 	postTime, slug := parseFilename(item.Filename)
 	postDateString := postTime.Format("2006-01-02")
 	geminiFilename := fmt.Sprintf("%v-%v.gmi", postDateString, slug)
@@ -34,6 +35,7 @@ func newPost(folder string, item folderItem, indexURL string) *post {
 	}
 
 	return &post{
+		Index:        index,
 		ModifiedTime: item.ModifiedTime,
 		Filename:     geminiFilename,
 		URL:          fmt.Sprintf("%v/%v", indexURL, geminiFilename),
