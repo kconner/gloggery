@@ -6,6 +6,8 @@ For posts, gloggery uses a simple post filename convention and plain text conten
 
 When you run gloggery, it builds one post page per post, one index page to list all posts, and one Atom feed file to list recent posts. You can customize the templates for these page types.
 
+To serve your built pages, find a server you like at [Awesome Gemini](https://github.com/kr1sp1n/awesome-gemini).
+
 ## Setup
 
 1. Have a [Go language](https://golang.org) environment
