@@ -31,6 +31,11 @@ release: gloggery
 	@mkdir -p $(release_work_path)/.gloggery/posts
 	@cd $(release_work_path) && tar czvf ../$(release_path) .
 	@echo release built at $(release_path)
+	@echo Built with:
+	@echo -n '- '
+	@uname -a
+	@echo -n '- '
+	@go version
 
 clean:
 	@rm gloggery 2>/dev/null || true
