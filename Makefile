@@ -19,10 +19,21 @@ install: gloggery
 	@cp -n templates/*.tmpl $(data_path)/templates/
 	@echo data installed at $(data_path)
 
+release_path=./release
+release: gloggery
+	@mkdir -p $(release_path)/bin
+	@cp gloggery $(release_path)/bin/
+	@mkdir -p $(release_path)/.gloggery/
+	@cp -r templates $(release_path)/.gloggery/
+	@mkdir -p $(release_path)/.gloggery/posts
+	@echo release built at $(release_path)
+
 clean:
 	@rm gloggery 2>/dev/null || true
 	@rm output/* 2>/dev/null || true
 	@rmdir output 2>/dev/null || true
+	@rmdir output 2>/dev/null || true
+	@rm -rf $(release_path)
 	@echo cleaned
 
 watch:
