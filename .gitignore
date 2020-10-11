@@ -1,3 +1,5 @@
 /gloggery
 /output
+/release
+/gloggery-*.tgz
 *.swp
