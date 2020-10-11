@@ -39,6 +39,8 @@ release: gloggery
 
 clean:
 	@rm gloggery 2>/dev/null || true
+	@rm output/* 2>/dev/null || true
+	@rmdir output 2>/dev/null || true
 	@rm -rf $(release_work_path) 2>/dev/null || true
 	@rm $(release_path) 2>/dev/null || true
 	@echo cleaned
