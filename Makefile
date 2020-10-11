@@ -4,6 +4,8 @@ prefix=$(HOME)
 exec_prefix=$(prefix)
 bindir=$(exec_prefix)/bin
 
+version=1.0
+
 gloggery: src/*.go
 	@go build -o $@ src/*.go
 	@echo built
@@ -19,21 +21,21 @@ install: gloggery
 	@cp -n templates/*.tmpl $(data_path)/templates/
 	@echo data installed at $(data_path)
 
-release_path=./release
+release_work_path=release
+release_path=gloggery-$(version).tgz
 release: gloggery
-	@mkdir -p $(release_path)/bin
-	@cp gloggery $(release_path)/bin/
-	@mkdir -p $(release_path)/.gloggery/
-	@cp -r templates $(release_path)/.gloggery/
-	@mkdir -p $(release_path)/.gloggery/posts
+	@mkdir -p $(release_work_path)/bin
+	@cp gloggery $(release_work_path)/bin/
+	@mkdir -p $(release_work_path)/.gloggery/
+	@cp -r templates $(release_work_path)/.gloggery/
+	@mkdir -p $(release_work_path)/.gloggery/posts
+	@cd $(release_work_path) && tar czvf ../$(release_path) .
 	@echo release built at $(release_path)
 
 clean:
 	@rm gloggery 2>/dev/null || true
-	@rm output/* 2>/dev/null || true
-	@rmdir output 2>/dev/null || true
-	@rmdir output 2>/dev/null || true
-	@rm -rf $(release_path)
+	@rm -rf $(release_work_path) 2>/dev/null || true
+	@rm $(release_path) 2>/dev/null || true
 	@echo cleaned
 
 watch:
