@@ -81,6 +81,10 @@ func (p *post) ReadableDate() string {
 	return p.PostTime.Format("2 January 2006")
 }
 
+func (p *post) ISODate() string {
+	return p.PostTime.Format("2006-01-02")
+}
+
 func (p *post) ISOTime() string {
 	return p.PostTime.Format(time.RFC3339)
 }
