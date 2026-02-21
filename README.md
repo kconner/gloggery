@@ -52,7 +52,7 @@ Run gloggery with the options appropriate to your glog.
 gloggery will emit to the output folder:
 
 - one post page file per post that has changed
-- a index file listing all posts, if any post changed
+- an index file listing all posts, if any post changed
 - an Atom feed file listing recent posts, if any post changed
 
 > Post page filenames will not exactly match post input filenames. gloggery omits the time of day and adds the `.gmi` extension, but preserves the date and slug.
